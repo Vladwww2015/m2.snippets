@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="config_image_uploader" translate="label" sortOrder="10">
+            <label>Config Image Uploader</label>
+        </tab>
+        <section id="general" translate="label" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Benefits Block</label>
+            <tab>brander</tab>
+            <resource>SystemConfig_ImageGalleryUploader::config_images</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Configuration</label>
+                <field id="slider_image_1" translate="label" type="image" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Slider Image 1</label>
+                    <comment>Allowed file types: jpg, jpeg, gif, png</comment>
+                    <frontend_model>SystemConfig\ImageGalleryUploader\Block\Adminhtml\ImagesGallery</frontend_model>
+                    <!--<backend_model>SystemConfig\ImageGalleryUploader\Model\SaveImagesGallery</backend_model> TODO save-->
+                    <base_url type="media" scope_info="1">webkul/banner</base_url>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
