@@ -1,8 +1,10 @@
 Работа модуля. Общее
 
-1) Функционал автоматически пробегается по всем модулям и ищет файл по пути Namespace_ModuName/etc/cmsadvanced.xml по типу схемы Brander_CmsAdvanced:/etc/cmsadvanced.xsd
-2) В коробке есть два основных объекта это:
-- Тип страницы(Brander\CmsAdvanced\Model\Cmsadvanced, который реализует интерфейс Brander\CmsAdvanced\Api\Data\CmsadvancedInterface)
+ФУНКЦИОНАЛ СОЗДАНИЯ CMSADVANCED СТРАНИЦ
+
+1) Функционал модуля автоматически пробегается по всем модулям и ищет файл по пути Namespace_ModuName/etc/cmsadvanced.xml по типу схемы Brander_CmsAdvanced:/etc/cmsadvanced.xsd
+2) В коробке модуля есть два основных объекта это:
+- Тип страницы(B rander\CmsAdvanced\Model\Cmsadvanced, который реализует интерфейс Brander\CmsAdvanced\Api\Data\CmsadvancedInterface)
 - Тип грида (Brander\CmsAdvanced\Model\Grid, который реализует интерфейс Brander\CmsAdvanced\Api\Data\GridInterface)
 3) Объект Brander\CmsAdvanced\Model\Cmsadvanced - предназначен для создания страницы и её атрибутов
 4) Объект Brander\CmsAdvanced\Model\Grid - предназначен для создания связанных сущностей со страницей, к примеру дополнительных оберток и их элементов - блоков
@@ -18,7 +20,7 @@
   </pagetypes>
   
 где - <pagetypes> - определяет типы страниц(образования конечного массива всех типов страниц)
-Внутри тега <pagetypes> указываются новые типы страниц, есть два способа: 
+Внутри тега <pagetypes> указываются новые типы страниц, есть два способа добавления/обновления страниц: 
 - первый способ - добавляет новый тип страницы;
 - второй способ - даёт возможность расширить существующий тип страницы
 
@@ -29,6 +31,8 @@
 <pagetypes>
   <pageType name="redirect">
     <name>Redirect On Categories</name>
+    <block>Brander\CmsHomePage\Block\HomePage</block> - указывает используемый блок - не обязательный тег(будет применён дефолтный)
+    <template>page/home-page.phtml</template> - указывает используемый шаблон - не обязательный тег(будет применён дефолтный)
   </pageType>
 </pagetypes>
 
@@ -42,7 +46,9 @@
   </pageTypeAdd>
 </pagetypes>
 где тег pageTypeAdd - это ключевой тег, который позволяет расширять/обновлять существующий тип страницы
-Далее все что будет написано для ключевого тега pageType - так же обязательно в применении и для pageTypeAdd
+
+    Далее все что будет написано для ключевого тега pageType - так же обязательно в применении и для pageTypeAdd
+    
 3) Минимальная структура для создания/обновления fieldset группы:
 ....
 <pagetypes>
@@ -80,7 +86,8 @@
 Всё описанное в этом пункте так же обязательно для pageTypeAdd
 
 4) Добавление атрибутов в группу fieldset
-
+Атрибуты сразу же будут отображены в виде полей, но будут созданы в бд при любом сохранении сущностей Grid или Cmsadvanced см. обсёрвер Brander\CmsAdvanced\Observer\Grid\AttributesSave
+    
 <pagetypes>
     <pageType name="redirect">
         <name>Redirect On Categories</name>
@@ -159,7 +166,6 @@
 </config>
 
 - wysiwyg редактор
-
 <config>
   <visible_in_grid>false</visible_in_grid>
   <type>text</type>
@@ -179,7 +185,148 @@
   <input>date</input>
 </config>
 
-Так же есть ещё множество ui элементов, тут были описаны те которые были протестированы и работают
+Так же есть ещё множество ui элементов которые могут быть так же использованы, тут были описаны те которые были протестированы в работе
 
+ 7) Обновление атрибутов
+Для того чтобы обновить данные атрибута, в файле cmsadvanced нужно прописать:
+  <attribute name="description">
+    .....
+    <config>
+        <label>Description</label>
+        <formElement>wysiwyg</formElement><!-- see Mageto\Ui\Component\Form\Element -->
+        <type>varchar</type>
+        <reload_attribute> --> this reload attribute
+            <frontend_input>text</frontend_input>
+            <backend_type>text</backend_type>
+        </reload_attribute>
+        <input>editor</input>
+      ...
+    </config>
+    </attribute>
+    
+    где ключевой тег reload_attribute - позволяет добавить/обновить данные атрибута
+    
+ ФУНКЦИОНАЛ СОЗДАНИЯ GRID СУЩНОСТЕЙ
 
-
+ Grid в рамках модуля cmsadvanced - это привязанные сущности к определенному типу страниц
+ При добавлении грида на страницу, происходит генерация таблиц по определенной структуре описанной в файле cmsadvanced.xml
+   
+  1) Простой пример добавления грида
+    <pagetypes>
+          <pageTypeAdd name="home_page">
+              <name>home_page</name>
+              <groups>
+                  <group name="element_homepage">
+                      <name>element_homepage</name>
+                      <config>
+                          <grid>
+                              <label>Element Homepage</label>
+                              <namespace>element_homepage</namespace>
+                              <attributes>
+                                  <attribute name="enable">
+                                      <sortOrder>1</sortOrder>
+                                      <js_config>
+                                          <extends>input</extends>
+                                      </js_config>
+                                      <config>
+                                          <label>Enable</label>
+                                          <type>varchar</type>
+                                          <component>select</component>
+                                          <input>select</input>
+                                          <source>Brander\CmsAdvanced\Model\Config\Source\Yesno</source>
+                                      </config>
+                                  </attribute>
+                                  .....
+                            </attributes>
+                        </grid>
+                    </config>
+                </group>
+            </groups>
+      </pageTypeAdd>
+    </pagetypes>
+    В результате будет создана таблица с полем Ebable, так же будет создана форма с созданным select
+    
+   где тег grid - ключевой тег, который говорит о создании сущности грида
+   тег label - тег, который показывает название грида
+   тег namespace указывает код грида, который отображается в скопе определенного fieldset. ВНИМЕНИЕ: значение этого тега, должно совпадать с кодом тега group, см. пример выше
+ 2) Функционал "тип грида" grid_type - очень полезная вещь для обёрток wrapper
+Как это работает, пример:
+    Дано:
+    1) Есть грид обёртка(wrapper) атрибуты(название, позиция и т.д. , а так же списки, которые будут отображены, только для определенных типов гридов)
+    2) Созданы другие типы грида элементы обёртки(карусель, баннера, видео файлы и т.д.)
+    
+    Нужно выводить эти элементы на странице в определенной структурированной форме.
+    
+    Решение:
+    1) Добавляются гриды(wrapper и разные типы элементы)
+    2) В своём модуле добавляется модель, которая реализует интерфейс Brander\CmsAdvanced\Model\Grid\GridTypeInterface;
+    3) Добавляем модель (которая реализует Brander\CmsAdvanced\Model\Grid\GridTypeInterface) через event: cmsadvanced_grid_type_class_files
+    В итоге получаем отображение в гриде wrapper списка "типы грида"
+    
+    Код: 
+    <pagetypes>
+        <pageType name="home_page">
+            <name>Home Page</name>
+            <block>Brander\CmsHomePage\Block\HomePage</block>
+            <template>page/home-page.phtml</template>
+            <groups>
+                <group name="grid_wrapper">
+                    <name>grid_wrapper</name>
+                    <config>
+                        <sortOrder>1</sortOrder>
+                        <collapsible>1</collapsible>
+                        <grid>
+                            <label>Block Homepage</label>
+                            <namespace>grid_wrapper</namespace>
+                            <attributes>
+                                <attribute name="enable">
+                                    <sortOrder>5</sortOrder>
+                                    <js_config>
+                                        <extends>input</extends>
+                                    </js_config>
+                                    <config>
+                                        <label>Enable</label>
+                                        <type>varchar</type>
+                                        <component>select</component>
+                                        <input>select</input>
+                                        <source>Brander\CmsAdvanced\Model\Config\Source\Yesno</source>
+                                    </config>
+                                </attribute>
+                                <attribute name="elements_block_items">
+                                    <sortOrder>1000</sortOrder>
+                                    <grid_type>elements_block</grid_type>
+                                    <js_config>
+                                        <extends>input</extends>
+                                    </js_config>
+                                    <config>
+                                        <label>Block Element Items</label>
+                                        <visible_in_grid>0</visible_in_grid>
+                                        <type>text</type>
+                                        <component>select</component>
+                                        <input>multiselect</input>
+                                        <source>Brander\CmsHomePage\Model\Config\Source\ElementsBlock</source>
+                                    </config>
+                                </attribute>
+                            </attributes>
+                        </grid>
+                    </config>
+                    <js_config>
+                        <component>Magento_Ui/js/form/components/fieldset</component>
+                        <collapsible>1</collapsible>
+                    </js_config>
+             \ElementBlock   </group>
+              ...
+              в данном примере указываем wrapper grid
+              где в атрибуте с именем elements_block_items добавлен тег grid_type, который будет отображать данное поле, только для типа грида elements_block
+              ВАЖНО: для того чтобы отображать данный атрибут для нескольких типов гридов нужно разделить их знаком |
+              пример: <grid_type>elements_block|example_type_grid</grid_type>
+              Так же если данный функционал будет написан в разных модулях и будет использован для определенного атрибута, то grid_type будет слит и разделен | - автоматически
+              
+        Подробнее по функционалу grid_type можно посмотреть в модуле Brander_CmsHomePage:
+        1) Brander/CmsHomePage/etc/cmsadvanced.xml
+        2) Brander\CmsHomePage\Model\Grid\GridType\ElementsBlock
+        3) Brander\CmsHomePage\Observer\ElementBlock
+              
+     
+    
+    
