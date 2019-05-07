@@ -322,7 +322,7 @@
               пример: <grid_type>elements_block|example_type_grid</grid_type>
               Так же если данный функционал будет написан в разных модулях и будет использован для определенного атрибута, то grid_type будет слит и разделен | - автоматически
               
-        Подробнее по функционалу grid_type можно посмотреть в модуле Brander_CmsHomePage:
+        Подробнее по функционалу grid_type можно посмотреть реализацию в модуле Brander_CmsHomePage:
         1) Brander/CmsHomePage/etc/cmsadvanced.xml
         2) Brander\CmsHomePage\Model\Grid\GridType\ElementsBlock
         3) Brander\CmsHomePage\Observer\ElementBlock
